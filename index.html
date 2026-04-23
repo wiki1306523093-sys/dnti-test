@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNTI 数字游民测试</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #101018;
+      color: #e8e8ee;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .sbti-box {
+      background: #1b1b26;
+      border: 1px solid #2c2c3a;
+      border-radius: 24px;
+    }
+    .sbti-button {
+      background: #5c5ce3;
+      border-radius: 16px;
+      color: white;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .sbti-button:hover {
+      background: #4e4ed6;
+    }
+    .bag-item {
+      background: #1f1f2e;
+      border: 1px solid #2f2f44;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bag-item.active {
+      background: #4c4cdd;
+      border-color: #7c7cf5;
+    }
+    .personality-card {
+      background: #181825;
+      border: 1px solid #33334a;
+      border-radius: 24px;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .shake-animation { 
+      animation: shake 0.3s; 
+    }
+  </style>
+</head>
+<body>
+  <div class="max-w-sm mx-auto px-5 py-10">
+
+<div id="home" class="text-center space-y-8 py-10 relative">
+      <div class="absolute top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-indigo-500/30 blur-[70px] rounded-full pointer-events-none -z-10"></div>
+      
+      <div class="flex justify-center space-x-3">
+        <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-medium rounded-full border border-blue-500/20">
+          🔥 爆款人格解析
+        </span>
+        <span class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
+          🔮 15题深度拷问
+        </span>
+      </div>
+
+      <div class="space-y-3">
+        <h1 class="text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 tracking-tighter drop-shadow-sm" style="font-family: Impact, sans-serif;">
+          DNTI
+        </h1>
+        <h2 class="text-2xl font-bold text-white tracking-widest">数字游民生存力测试</h2>
+        <p class="text-gray-400 text-sm mt-4 leading-relaxed max-w-[280px] mx-auto">
+          脱下孔乙己的长衫前，测一测你的“旷野生存力”。寻找属于你的全球旅居分型。
+        </p>
+      </div>
+
+      <div class="text-3xl tracking-[0.5em] opacity-80 py-2">
+        💻 ✈️ 🌍 ☕
+      </div>
+
+      <div class="pt-6 relative z-10">
+        <button onclick="start()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.7)] hover:-translate-y-1 transition-all duration-300">
+          立即开启测试
+        </button>
+        <p class="text-gray-500 text-xs mt-5 flex items-center justify-center gap-1">
+          <span>⏱️</span> 预计用时 2 分钟 · 沉浸式体验
+        </p>
+      </div>
+    </div>
+
+    <div id="quiz" class="hidden space-y-4">
+      <p class="text-gray-400 text-sm">第 <span id="q-num">1</span>/15 题</p>
+      <div class="sbti-box p-5 space-y-4">
+        <h2 id="q-text" class="text-xl font-semibold leading-relaxed"></h2>
+        <div id="q-options" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <div id="map-select" class="hidden space-y-4">
+      <p class="text-gray-400 text-sm">额外测试：选择你的第一站</p>
+      <div class="sbti-box p-5 space-y-4">
+        <h2 class="text-xl font-semibold">如果明天就出发，你会去哪？</h2>
+        <div id="dest-options" class="grid grid-cols-1 gap-3"></div>
+      </div>
+    </div>
+
+    <div id="bag" class="hidden space-y-4">
+      <p class="text-gray-400 text-sm">你的数字游民背包</p>
+      <div class="sbti-box p-5 space-y-4">
+        <h2 class="text-xl font-semibold">选择 5 件随身物品</h2>
+        <p class="text-sm text-gray-400">已选 <span id="bag-count" class="font-bold text-white">0</span>/5</p>
+        <div id="bag-items" class="grid grid-cols-2 gap-3"></div>
+        <button onclick="submitBag()" class="sbti-button w-full py-3 mt-4">确认选择</button>
+      </div>
+    </div>
+
+    <div id="result" class="hidden text-center space-y-6">
+      <div class="personality-card p-8">
+        <p class="text-sm uppercase text-gray-400 tracking-widest mb-2">你的 DNTI 分型</p>
+        <h1 id="type-label" class="text-5xl font-bold text-white mb-2"></h1>
+        <div id="type-icon" class="text-6xl mb-4"></div>
+        <h2 id="type-name" class="text-2xl font-semibold text-white"></h2>
+      </div>
+
+      <div class="sbti-box p-5 text-left">
+        <p class="text-white font-medium mb-2">分型解析</p>
+        <p id="type-desc" class="text-gray-300 text-sm leading-relaxed"></p>
+      </div>
+
+      <div class="sbti-box p-5 text-left">
+        <p class="text-white font-medium mb-2">数字游民生存建议</p>
+        <p id="type-advice" class="text-gray-300 text-sm leading-relaxed"></p>
+      </div>
+
+      <button onclick="restart()" class="sbti-button w-full py-3">重新测试</button>
+    </div>
+  </div>
+
+  <script>
+    // 1. 扩充至15道核心单选题
+    const questions = [
+      {q:"没人监督时，你的工作状态？",o:[{t:"高度自律，主动完成",s:4},{t:"基本能按时完成",s:3},{t:"容易拖延，最后赶工",s:2},{t:"经常摆烂，效率很低",s:1}]},
+      {q:"收入不稳定时，你的心态？",o:[{t:"淡定，相信自己能赚回来",s:4},{t:"有点慌，但能调整",s:3},{t:"焦虑，睡不好",s:2},{t:"无法接受，必须稳定",s:1}]},
+      {q:"面对平台算法的不断变化与派单机制，你的应对策略是？",o:[{t:"迅速摸透规律，化被动为主动",s:4},{t:"边做边适应，顺其自然",s:3},{t:"经常感到被系统支配的焦虑",s:2},{t:"极其反感，宁愿拿固定死工资",s:1}]},
+      {q:"计划被打乱，你会？",o:[{t:"灵活调整，无所谓",s:4},{t:"稍微不爽但接受",s:3},{t:"烦躁，需要很久平复",s:2},{t:"非常崩溃，讨厌变化",s:1}]},
+      {q:"对于工作与生活的边界线，你的看法是？",o:[{t:"随遇而安，随时工作也随时生活",s:4},{t:"尽量区分，但偶尔越界能接受",s:3},{t:"常常因为工作入侵生活感到内耗",s:2},{t:"必须严格区分，下班绝不看消息",s:1}]},
+      {q:"独自旅居生活，你能适应吗？",o:[{t:"非常享受独处",s:4},{t:"可以适应，没问题",s:3},{t:"偶尔孤独，能接受",s:2},{t:"害怕孤独，无法长期",s:1}]},
+      {q:"面对长期接单带来的“情绪劳动”和社交倦怠，你会？",o:[{t:"熟练切换“营业状态”并能自我排解",s:4},{t:"需要定期断网“回血”才能继续",s:3},{t:"很容易把负面情绪积压在心里",s:2},{t:"极其痛苦，抗拒与甲方反复拉扯",s:1}]},
+      {q:"面对压力与焦虑，你会？",o:[{t:"自我调节，很快恢复",s:4},{t:"找人倾诉缓解",s:3},{t:"内耗很久，走不出",s:2},{t:"被压垮，想逃避",s:1}]},
+      {q:"你对未来收入的规划？",o:[{t:"多元收入，不怕波动",s:4},{t:"有储备，能抗风险",s:3},{t:"勉强够花，无储备",s:2},{t:"必须固定月薪才安心",s:1}]},
+      {q:"遇到网络环境极差，无法提交工作时？",o:[{t:"启动备用方案或找网吧，临危不乱",s:4},{t:"跟客户沟通延期，心态平稳",s:3},{t:"非常急躁，不断刷新",s:2},{t:"崩溃，觉得这种生活太不靠谱",s:1}]},
+      {q:"你的物欲水平如何？",o:[{t:"极简主义，一个背包走天下",s:4},{t:"只买必需品，能省则省",s:3},{t:"喜欢买买买，搬家很痛苦",s:2},{t:"必须要有高品质的物质生活环绕",s:1}]},
+      {q:"面对不同城市的文化冲击和陌生人？",o:[{t:"极度兴奋，主动融入当地圈子",s:4},{t:"保持开放态度，随缘结交",s:3},{t:"只跟原本的圈子或同类游民玩",s:2},{t:"害怕陌生环境，社恐发作",s:1}]},
+      {q:"当数字游民红利期过去，收入锐减时？",o:[{t:"迅速转型或开发副业，适应新周期",s:4},{t:"缩减开支，寻找其他接单渠道",s:3},{t:"极度迷茫，考虑重新找班上",s:2},{t:"后悔选择，急于寻找避风港",s:1}]},
+      {q:"你觉得数字游民最需要的核心竞争力是？",o:[{t:"强大的自我迭代和情绪免疫能力",s:4},{t:"过硬且不可替代的专业技能",s:3},{t:"良好的人脉和稳定的客源",s:2},{t:"充足的存款",s:1}]},
+      {q:"你向往数字游民的核心是？",o:[{t:"自由、体验世界",s:4},{t:"不用坐班，时间自由",s:3},{t:"逃避职场压力",s:2},{t:"没想清楚，只是跟风",s:1}]}
+    ];
+
+    // 2. 旅居地选择
+    const destinations = [
+      {name: "云南 (大理/丽江)", desc: "数字游民老家，山水与社区并存", score: 4},
+      {name: "海南 (万宁/陵水)", desc: "冲浪与日落，极致的自由随性", score: 4},
+      {name: "新疆 (阿勒泰/伊犁)", desc: "广袤避世，但对远程网络有考验", score: 3},
+      {name: "上海 (安福路/巨鹿路)", desc: "高度商业化，精致便利但成本极高", score: 1},
+      {name: "北京 (望京/中关村)", desc: "资源集中，更适合搞事业而非游民", score: 1}
+    ];
+
+    // 3. 背包多选题（15选5）
+    const bagItems = [
+      {n:"💻 高性能工作本",s:4},{n:"🎧 顶级降噪耳机",s:4},{n:"🌍 全球旅行插头",s:4},
+      {n:"📱 双卡双待备用机",s:4},{n:"🔋 2W毫安充电宝",s:4},{n:"☕ 便携手冲咖啡",s:3},
+      {n:"⛺ 轻量级户外帐篷",s:3},{n:"📿 情绪调节香薰",s:3},{n:"✍️ 数位板/阅读器",s:3},
+      {n:"🛡️ 境外医疗保险单",s:2},{n:"💊 抗焦虑/助眠药",s:1},{n:"👔 备用正装/西服",s:1},
+      {n:"📄 纸质版长期规划",s:1},{n:"🏢 社保代缴凭证",s:1},{n:"📇 实体社交名片",s:1}
+    ];
+
+    // 4. 结果阈值
+    const types = [
+      {min:69, max:84,  icon:"WAND.png", name:"天选游民", desc:"你拥有强大的情绪免疫力与自我迭代能力。世界对你来说没有边界，算法与压力都无法将你困住。", advice:"保持极简，去更远的地方，你的天赋就在路上。"},
+      {min:53, max:68, icon:"DRIFT.png", name:"漂泊易感型", desc:"你渴望自由也具备一定能力，但在面对情绪损耗和收入波动时，容易陷入短暂内耗。", advice:"在旅途中建立自己的“数字锚点”，偶尔停下喘口气。"},
+      {min:37, max:52, icon:"PLAN.png", name:"理性稳重型", desc:"你向往不被束缚，但你的底色依然是理性与避险。你需要高度明确的规划才能安心流浪。", advice:"尝试微型游民生活（如每年旅居1个月），没必要彻底切断后路。"},
+      {min:21, max:36, icon:"SAFE.png", name:"堡垒守卫者", desc:"你极度看重确定性和安全感。无序的派单、陌生的环境和不稳定的收入会迅速摧毁你的能量。", advice:"数字游民只是滤镜，你真正适合的是一份有成长性的稳定事业。"}
+    ];
+
+    let currentQ = 0;
+    let baseScore = 0;
+    let selectedBag = [];
+
+    function show(id) {
+      document.getElementById("home").classList.add("hidden");
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("map-select").classList.add("hidden");
+      document.getElementById("bag").classList.add("hidden");
+      document.getElementById("result").classList.add("hidden");
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function start() {
+      currentQ = 0;
+      baseScore = 0;
+      selectedBag = [];
+      show("quiz");
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const q = questions[currentQ];
+      document.getElementById("q-num").innerText = currentQ + 1;
+      document.getElementById("q-text").innerText = q.q;
+      const box = document.getElementById("q-options");
+      box.innerHTML = "";
+      
+      q.o.forEach(o => {
+        const b = document.createElement("button");
+        b.className = "w-full p-4 rounded-xl bg-[#1f1f2e] text-white text-left hover:bg-[#2f2f44] transition";
+        b.innerText = o.t;
+        b.onclick = () => {
+          baseScore += o.s;
+          currentQ++;
+          if (currentQ >= questions.length) { 
+            show("map-select"); 
+            renderMap(); 
+          } else {
+            renderQuiz();
+          }
+        };
+        box.appendChild(b);
+      });
+    }
+
+    function renderMap() {
+      const box = document.getElementById("dest-options");
+      box.innerHTML = "";
+      destinations.forEach(dest => {
+        const b = document.createElement("button");
+        b.className = "w-full p-4 rounded-xl bg-[#1f1f2e] text-left border border-[#2f2f44] hover:border-[#7c7cf5] transition";
+        b.innerHTML = `<p class="text-white font-bold text-lg">${dest.name}</p><p class="text-gray-400 text-sm mt-1">${dest.desc}</p>`;
+        b.onclick = () => {
+          baseScore += dest.score;
+          show("bag");
+          renderBag();
+        };
+        box.appendChild(b);
+      });
+    }
+
+    function renderBag() {
+      const box = document.getElementById("bag-items");
+      box.innerHTML = "";
+      selectedBag = [];
+      updateBagCount();
+      bagItems.forEach((it, idx) => {
+        const d = document.createElement("div");
+        d.className = "bag-item p-3 text-center text-sm flex items-center justify-center min-h-[60px]";
+        d.innerText = it.n;
+        d.onclick = () => {
+          if (selectedBag.includes(idx)) {
+            selectedBag = selectedBag.filter(i => i !== idx);
+            d.classList.remove("active");
+          } else {
+            if (selectedBag.length >= 5) {
+                // 满5个时给抖动反馈
+                d.classList.add("shake-animation"); 
+                setTimeout(() => d.classList.remove("shake-animation"), 300);
+                return;
+            }
+            selectedBag.push(idx);
+            d.classList.add("active");
+          }
+          updateBagCount();
+        };
+        box.appendChild(d);
+      });
+    }
+
+    function updateBagCount() {
+      document.getElementById("bag-count").innerText = selectedBag.length;
+    }
+
+    function submitBag() {
+      // 严格要求刚好5件
+      if (selectedBag.length !== 5) { 
+        alert("请精确挑选 5 件随身物品！"); 
+        return; 
+      }
+      let bagScore = selectedBag.reduce((t,i) => t + bagItems[i].s, 0);
+      let total = baseScore + bagScore;
+      
+      let res = types.find(x => total >= x.min && total <= x.max);
+
+      // 万一分数计算有极小概率溢出，做个安全兜底
+      if(!res) res = types[0]; 
+
+    document.getElementById("type-icon").innerHTML = `<img src="${res.icon}" alt="${res.label}" class="mx-auto w-64 h-auto rounded-xl shadow-lg mb-4">`;
+      document.getElementById("type-name").innerText = res.name;
+      document.getElementById("type-desc").innerText = res.desc;
+      document.getElementById("type-advice").innerText = res.advice;
+
+      show("result");
+    }
+
+    function restart() { 
+      start(); 
+    }
+  </script>
+</body>
+</html>
